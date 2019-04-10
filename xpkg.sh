@@ -1,6 +1,8 @@
 #!/usr/bin/busybox sh
 set -e
 
+XPKG_VERSION="0.1.0"
+
 : "${XPKG_PREFIX:=}"
 : "${XPKG_STORE:=${XPKG_PREFIX}/xpkg-store}"
 
@@ -91,7 +93,7 @@ main()
     [[ "$clean" == 0 ]] && printf " (skip /$skip_if_modified/ if modified, unimplemented)"
     [[ "$clean" != 0 ]] && printf " (no skip)"
     printf "\n"
-    [[ "$bootstrap" != 0 ]] && printf "  bootstrap (unimplemented)\n"
+    [[ "$bootstrap" != 0 ]] && printf "  bootstrap\n"
     for pkg in $pkgs_to_archive; do
         printf "  archive:%s (unimplemented)\n" "$pkg"
     done
@@ -102,6 +104,14 @@ main()
 
     # Execute PLAN
     failure_count=0
+
+    if [[ "$bootstrap" != 0 ]]; then
+        if ! bootstrap; then
+            printf "\e[1;31m FAILED    \e[0m %s\n" "bootstrap"
+            : $((failure_count++))
+        fi
+    fi
+
     for plan in $pending_pkgs; do
         op="${plan%%:*}"
         fullpkg="${plan#*:}"
@@ -110,6 +120,7 @@ main()
             : $((failure_count++))
         fi
     done
+
     if [[ "$failure_count" != 0 ]]; then
         >&2 printf "\e[1;31m ERROR \e[0m Failed %d plans.\n" "$failure_count"
         exit 1
@@ -122,7 +133,7 @@ main()
 help()
 {
     printf "\n"
-    printf "xpkg - extraction-based package manager\n"
+    printf "xpkg v%s - extraction-based package manager\n" "$XPKG_VERSION"
     printf "\n"
     printf "USAGE\n"
     printf "  %s [OPTIONS] [--]\n" "$0"
@@ -137,6 +148,39 @@ help()
     printf "  -b                        Bootstrap: install this script as an xpkg package.\n"
     printf "  -y                        Yes: don't ask questions.\n"
     exit "${1:-0}"
+}
+
+bootstrap()
+{
+    local bootstrap_prefix
+    local rootfs
+    local pkgpath
+    local file
+    local fullpkg
+
+    bootstrap_prefix="$XPKG_STORE/bootstrap"
+    pkgpath="$bootstrap_prefix/xpkg@$XPKG_VERSION.tar.gz"
+    printf "\e[1;35m CREATE   \e[0m %s\n" "$pkgpath"
+
+    rootfs="$bootstrap_prefix/rootfs"
+    rm -rf -- "$rootfs"
+
+    install -Dm 755 -- "$0" "$rootfs/usr/bin/xpkg" || return 1
+
+    tar czvf "$pkgpath" -C "$rootfs" usr | while read -r file; do
+        if [[ -f "$rootfs/$file" ]]; then
+            printf "    collect %s\n" "$rootfs/$file"
+        fi
+    done || return 1
+
+    rm -rf -- "$rootfs"
+
+    if fullpkg="$(resolve_full_package_name "xpkg" 2>/dev/null)"; then
+        uninstall_package "$fullpkg" || return 1
+    fi
+    install_package "$pkgpath" || return 1
+
+    return 0
 }
 
 install_package()
