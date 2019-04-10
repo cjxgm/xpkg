@@ -1,4 +1,4 @@
-#!/usr/bin/busybox sh
+#!/bin/busybox sh
 set -e
 
 XPKG_VERSION="0.1.0"
