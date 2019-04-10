@@ -209,7 +209,7 @@ install_package()
     ) || return 1
 
     pkgstore="$XPKG_STORE/$fullpkg"
-    tar xzvf "$path" -C "$XPKG_PREFIX" | while read -r file; do
+    tar xzvf "$path" -C "${XPKG_PREFIX:-/}" | while read -r file; do
         if [[ -f "$XPKG_PREFIX/$file" ]]; then
             printf "    extract %s\n" "$XPKG_PREFIX/$file"
             md5="$(md5sum "$XPKG_PREFIX/$file")"
