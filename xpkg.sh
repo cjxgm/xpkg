@@ -16,7 +16,7 @@ skip_if_modified='^etc\/'
 pending_pkgs=""
 pkgs_to_archive=""
 
-# :: () -> () [[no_return]]
+# :: () -> [[no_return]]
 main()
 {
     local opt
@@ -129,7 +129,7 @@ main()
     exit 0
 }
 
-# :: () -> ()
+# :: () -> [[no_return]]
 help()
 {
     printf "\n"
@@ -150,6 +150,7 @@ help()
     exit "${1:-0}"
 }
 
+# :: () -> ()
 bootstrap()
 {
     local bootstrap_prefix
@@ -183,6 +184,7 @@ bootstrap()
     return 0
 }
 
+# :: (string path) -> ()
 install_package()
 {
     local path
@@ -220,6 +222,7 @@ install_package()
     return 0
 }
 
+# :: (string fullpkg) -> ()
 uninstall_package()
 {
     local fullpkg
