@@ -141,8 +141,39 @@ help()
 
 install_package()
 {
-    printf "\e[1;32m INSTALL   \e[0m %s (unimplemented)\n" "$1"
-    return 1
+    local path
+    local fullpkg
+    local has_any_conflict
+    local file
+    local md5
+
+    path="$1"
+    printf "\e[1;32m INSTALL   \e[0m %s\n" "$path"
+
+    fullpkg="$(basename "$path" .tar.gz)"
+    validate_full_package_name "$fullpkg" || return 1
+
+    has_any_conflict=0
+    tar tf "$path" | (
+        while read -r file; do
+            if [[ -f "$XPKG_PREFIX/$file" ]]; then
+                >&2 printf "    \e[0;31mfile exists\e[0m %s\n" "$XPKG_PREFIX/$file"
+                has_any_conflict=1
+            fi
+        done
+        exit "$has_any_conflict"
+    ) || return 1
+
+    pkgstore="$XPKG_STORE/$fullpkg"
+    tar xzvf "$path" -C "$XPKG_PREFIX" | while read -r file; do
+        if [[ -f "$XPKG_PREFIX/$file" ]]; then
+            printf "    extract %s\n" "$XPKG_PREFIX/$file"
+            md5="$(md5sum "$XPKG_PREFIX/$file")"
+            printf "%s %s\n" "${md5% *}" "$file" >> "$pkgstore"
+        fi
+    done || return 1
+
+    return 0
 }
 
 uninstall_package()
