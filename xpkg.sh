@@ -178,8 +178,30 @@ install_package()
 
 uninstall_package()
 {
-    printf "\e[1;33m UNINSTALL \e[0m %s (unimplemented)\n" "$1"
-    return 1
+    local fullpkg
+    local md5
+    local path
+    local fullpath
+
+    fullpkg="$1"
+    printf "\e[1;33m UNINSTALL \e[0m %s\n" "$fullpkg"
+
+    cat "$XPKG_STORE/$fullpkg" | while read -r md5 path; do
+        [[ -z "$path" ]] && continue
+
+        fullpath="$XPKG_PREFIX/$path"
+        printf "    remove %s\n" "$fullpath"
+
+        if ! rm -f -- "$fullpath"; then
+            return 1
+        fi
+    done
+
+    if ! rm -f -- "$XPKG_STORE/$fullpkg"; then
+        return 1
+    fi
+
+    return 0
 }
 
 # :: (string pkgname) -> (string fullpkg)
