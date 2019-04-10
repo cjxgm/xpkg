@@ -9,3 +9,12 @@ Goal:
 - Package name and version comes from filename: `package-name@version.tar.gz`
 - PROBABLY: pacman-like hooks
 
+Tested with:
+
+- Busybox 1.30.1
+
+Tested on:
+
+- Arch Linux
+- Codex OS (Remarkable Paper Tablet), with custom-compiled busybox 1.30.1
+
