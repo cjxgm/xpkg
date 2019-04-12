@@ -38,12 +38,12 @@ main()
                     exit 1
                 fi
 
-                if echo "$OPTARG" | grep -qv '\.tar\.gz$'; then
-                    >&2 printf "\e[1m ERROR \e[0m Path must ends with \".tar.gz\": %s\n" "$OPTARG"
+                if echo "$OPTARG" | grep -qv '\.xpkg\.tar\.gz$'; then
+                    >&2 printf "\e[1m ERROR \e[0m Path must ends with \".xpkg.tar.gz\": %s\n" "$OPTARG"
                     exit 1
                 fi
 
-                fullpkg="$(basename "$OPTARG" .tar.gz)"
+                fullpkg="$(basename "$OPTARG" .xpkg.tar.gz)"
                 validate_full_package_name "$fullpkg"
                 pkgname="${fullpkg%@*}"
 
@@ -140,7 +140,7 @@ help()
     printf "\n"
     printf "OPTIONS\n"
     printf "  -h                        Display this text.\n"
-    printf "  -i /some/pkg@ver.tar.gz   Add package to install queue.\n"
+    printf "  -i pkg@ver.xpkg.tar.gz    Add package to install queue.\n"
     printf "  -u pkg                    Add package to uninstall queue.\n"
     printf "  -a pkg                    Archive: create package file from installed package.\n"
     printf "  -k regex                  Skip the matched path if modified (default '^etc\\/').\n"
@@ -160,7 +160,7 @@ bootstrap()
     local fullpkg
 
     bootstrap_prefix="$XPKG_STORE/bootstrap"
-    pkgpath="$bootstrap_prefix/xpkg@$XPKG_VERSION.tar.gz"
+    pkgpath="$bootstrap_prefix/xpkg@$XPKG_VERSION.xpkg.tar.gz"
     printf "\e[1;35m CREATE   \e[0m %s\n" "$pkgpath"
 
     rootfs="$bootstrap_prefix/rootfs"
@@ -196,7 +196,7 @@ install_package()
     path="$1"
     printf "\e[1;32m INSTALL   \e[0m %s\n" "$path"
 
-    fullpkg="$(basename "$path" .tar.gz)"
+    fullpkg="$(basename "$path" .xpkg.tar.gz)"
     validate_full_package_name "$fullpkg" || return 1
 
     has_any_conflict=0

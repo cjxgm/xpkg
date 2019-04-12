@@ -6,7 +6,7 @@ Goal:
 - No networking or repositories.
 - Support install and uninstall local packages. Installing new version is upgrading.
 - Only extraction, no post-install scripts or anything like that.
-- Package name and version comes from filename: `package-name@version.tar.gz`
+- Package name and version comes from filename: `package-name@version.xpkg.tar.gz`
 - PROBABLY: pacman-like hooks
 
 Tested with:
