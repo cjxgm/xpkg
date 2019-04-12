@@ -1,5 +1,9 @@
 # Release Notes
 
+## v0.1.2
+
+- Filename suffix must be `.xpkg.tar.gz`.
+
 ## v0.1.1
 
 - Shebang line set to `#!/bin/busybox sh`.
