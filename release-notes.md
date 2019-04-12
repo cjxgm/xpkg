@@ -1,5 +1,9 @@
 # Release Notes
 
+## v0.1.3
+
+- Remove bootstrap artifacts.
+
 ## v0.1.2
 
 - Filename suffix must be `.xpkg.tar.gz`.

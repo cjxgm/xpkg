@@ -1,7 +1,7 @@
 #!/bin/busybox sh
 set -e
 
-XPKG_VERSION="0.1.2"
+XPKG_VERSION="0.1.3"
 
 : "${XPKG_PREFIX:=}"
 : "${XPKG_STORE:=${XPKG_PREFIX}/xpkg-store}"
