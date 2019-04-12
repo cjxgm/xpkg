@@ -163,8 +163,8 @@ bootstrap()
     pkgpath="$bootstrap_prefix/xpkg@$XPKG_VERSION.xpkg.tar.gz"
     printf "\e[1;35m CREATE   \e[0m %s\n" "$pkgpath"
 
+    rm -rf -- "$bootstrap_prefix"
     rootfs="$bootstrap_prefix/rootfs"
-    rm -rf -- "$rootfs"
 
     install -Dm 755 -- "$0" "$rootfs/usr/bin/xpkg" || return 1
 
@@ -174,12 +174,16 @@ bootstrap()
         fi
     done || return 1
 
+    printf "    remove %s\n" "$rootfs"
     rm -rf -- "$rootfs"
 
     if fullpkg="$(resolve_full_package_name "xpkg" 2>/dev/null)"; then
         uninstall_package "$fullpkg" || return 1
     fi
     install_package "$pkgpath" || return 1
+
+    printf "\e[1;35m REMOVE   \e[0m %s\n" "$bootstrap_prefix"
+    rm -rf -- "$bootstrap_prefix"
 
     return 0
 }
